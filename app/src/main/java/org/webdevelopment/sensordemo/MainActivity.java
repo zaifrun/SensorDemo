@@ -20,8 +20,59 @@ public class MainActivity extends Activity implements SensorEventListener {
         setContentView(R.layout.activity_main);
         gameView = (MyView) findViewById(R.id.gameView);
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+        if (mSensorManager==null)
+            System.out.println("SensorManager is null");
+        else
+            System.out.println("SensorManager is up and running!");
+
         mRotationVectorSensor = mSensorManager.getDefaultSensor(
                 Sensor.TYPE_ROTATION_VECTOR);
+        Sensor accelSensor = mSensorManager.getDefaultSensor(
+                Sensor.TYPE_ACCELEROMETER);
+        Sensor gameRotation = mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
+        Sensor magnetosensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        Sensor gyrosensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        Sensor georotationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR);
+
+
+        //rotationvector sensor bruger gyroscopet
+        //gyroscopet er ikke med i emulatoren.
+
+        //magnetosensor og accelerometer ER MED i emulatoren
+
+        if (mRotationVectorSensor==null)
+            System.out.println("RotationVector is null");
+        else
+            System.out.println("RotationVector is up and running!");
+
+        if (accelSensor==null)
+            System.out.println("Acceleromter is null");
+        else
+            System.out.println("Accelerometer is up and running!");
+
+        if (gameRotation==null)
+            System.out.println("gamerotation is null");
+        else
+            System.out.println("gamerotation is up and running!");
+
+        if (magnetosensor==null)
+            System.out.println("magnetosensor is null");
+        else
+            System.out.println("magnetosensor is up and running!");
+
+        if (gyrosensor==null)
+            System.out.println("gyrosensor is null");
+        else
+            System.out.println("gyrosensor is up and running!");
+
+        if (georotationSensor==null)
+            System.out.println("georotationsensor is null");
+        else
+            System.out.println("georotationsensor is up and running!");
+
+
+
+
 
     }
 
