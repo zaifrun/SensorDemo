@@ -10,8 +10,11 @@ import android.util.Log;
 
 public class MainActivity extends Activity implements SensorEventListener {
 
+    //The sensormanager
     private SensorManager mSensorManager;
+    //The sensor we use
     private Sensor mRotationVectorSensor;
+    //The view to draw on
     private MyView gameView;
 
     @Override
@@ -76,6 +79,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     }
 
+    //we did need to implement this method to fullfill
+    //the interface, but it does not have to do anything.
     public void onAccuracyChanged(Sensor sensor,
                             int accuracy)
     {
@@ -97,15 +102,15 @@ public class MainActivity extends Activity implements SensorEventListener {
         mSensorManager.unregisterListener(this);
     }
 
+    //This method is also part of the interface we need
+    //to implement. It is called every time there are new
+    //sensor values (with the timeinterval specified in the
+    // onCreate method).
     @Override
     public void onSensorChanged(SensorEvent event)
     {
         float[] mRotationMatrixFromVector = new float[9];
-        float[] mRotationMatrix = new float[9];
         System.out.println("in onSensorChangedEvent");
-
-
-        // float[] vals = new float[3];
 
         float orientationVals[] = new float[3];
         // It is good practice to check that we received the proper sensor event
@@ -113,9 +118,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         {
             // Convert the rotation-vector to a 4x4 matrix.
             SensorManager.getRotationMatrixFromVector(mRotationMatrixFromVector, event.values);
-           /* SensorManager.remapCoordinateSystem(mRotationMatrixFromVector,
-                    SensorManager.AXIS_X, SensorManager.AXIS_Z,
-                    mRotationMatrix);*/
+
             SensorManager.getOrientation(mRotationMatrixFromVector, orientationVals);
 
             // Optionally convert the result from radians to degrees
@@ -138,6 +141,9 @@ public class MainActivity extends Activity implements SensorEventListener {
                     + orientationVals[2]);
             float roll = orientationVals[2];
             float pitch = orientationVals[1];
+
+            //we only take action when the angle is bigger/less
+            //than +/-, otherwise the pacman would never sit still
 
             if (roll>10 && roll<180)
             {

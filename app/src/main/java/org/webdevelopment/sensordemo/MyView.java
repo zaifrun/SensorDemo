@@ -14,6 +14,7 @@ public class MyView extends View {
 	
 	Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.pacman);
     //The coordinates for our dear pacman: (0,0) is the top-left corner
+	//The coordinates refer to the CENTER of the bitmap
 	int pacx = 50;
     int pacy = 400;
     int h,w; //used for storing our height and
@@ -70,13 +71,6 @@ public class MyView extends View {
 		super(context,attrs,defStyleAttr);
 	}
 
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-		System.out.println("pacx : "+pacx+", pacy: "+pacy);
-	}
-
 	//In the onDraw we put all our code that should be
 	//drawn whenever we update the screen.
 	@Override
@@ -84,6 +78,9 @@ public class MyView extends View {
 		//Here we get the height and weight
 		h = canvas.getHeight();
 		w = canvas.getWidth();
+		//first time we draw, then set the pacman x and y
+		//coordinates based on the width and height of the
+		//available canvas size.
 		if (firstDraw)
 		{
 			pacx = w/2-(bitmap.getScaledWidth(canvas)/2);
@@ -92,29 +89,12 @@ public class MyView extends View {
 			bitmapHalfHeight = bitmap.getScaledHeight(canvas)/2;
 		}
 		firstDraw = false;
-		System.out.println("h = "+h+", w = "+w);
 		//Making a new paint object
 		Paint paint = new Paint();
 		paint.setColor(Color.RED);
 		Rect r = new Rect(0,0,w,h);
 		canvas.drawRect(r,paint);
-
-		/*
-		//setting the color
-		paint.setColor(Color.RED);
-		canvas.drawColor(Color.WHITE); //clear entire canvas to white color
-		//drawing a line from (0,0) -> (300,200)
-		canvas.drawLine(0,0,300,200,paint);
-		paint.setColor(Color.GREEN);
-		canvas.drawLine(0,200,300,0,paint);
-		
-		//setting the color using the format: Transparency, Red, Green, Blue
-		paint.setColor(0xff000099);
-		
-		//drawing a circle with radius 20, and center in (100,100) 
-		canvas.drawCircle(100,100,20,paint); */
-		
-		
+		//Draw the pacman bipmap
 		canvas.drawBitmap(bitmap, pacx, pacy, paint);
 		super.onDraw(canvas);
 	}
