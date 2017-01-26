@@ -126,21 +126,33 @@ public class MainActivity extends Activity implements SensorEventListener {
             orientationVals[1] = (float) Math.toDegrees(orientationVals[1]);
             orientationVals[2] = (float) Math.toDegrees(orientationVals[2]);
 
-            //Azimoth bruges til rotation omkring y-aksen - dvs nord/syd i formål til jorden
-            //0 svarer til nord, 180 til syd, positive værdier til øst og negative til vest
-            //pitch er vinklen i forhold til jorden (vertikalt - top/bund af tlf roteres).
-            // 0 grader svarer til vandret på et bord.
-            // når den derefter roteres ned mod jorden
-            // (positive vinkler: fra 0 til 90) eller op mod himlen, så går vinkeln fra
-            // 0 til-90.
-            // roll, roteres fra kant til kant.
-            //0 svarer til vandret. Går derefter fra 0 til 180 (tilt til højre)
-            // den ene vej og fra 0 til -18 den anden vej (tilt til venstre)
+            /* Explanation on the various degrees
+             Azimut (index 0): is used for rotation around the y-axis. That means like a normal
+             compass detecting north/east/south/west - we don't use for this app
+             But a value of 0 corresponds to north, 180 to south, positive values to
+             East-side and negative values (-0 to -180) to West.
+
+             Pitch (index 1): is the angle of the phone relative to the earth. The pitch is affected
+             if you move the top of the phone down towards the ground or up towards the sky.
+             0 degrees corresponds to when the phone is flat on a table.
+             If you then tip the top of the phone towards the ground, the angles go from
+             0 to positive 90, if you tip the top of the phone up then the angles go from
+             0 to negative 90
+
+             Roll (index 2):
+             When the phone is tilted from "edge to edge". 0 corresponds to when the phone
+             is flat on the table.
+             If you then tilt the edge of the phone to "the right" then the degrees to
+             from 0 to +180, if you til phone to the left, the degrees to from 0 to -180.
+             */
+
+
             Log.d("Sensors","\nAzimoth: " + orientationVals[0] + ", Pitch: "
                     + orientationVals[1] + ",Roll: "
                     + orientationVals[2]);
-            float roll = orientationVals[2];
             float pitch = orientationVals[1];
+            float roll = orientationVals[2];
+
 
             //we only take action when the angle is bigger/less
             //than +/-, otherwise the pacman would never sit still
