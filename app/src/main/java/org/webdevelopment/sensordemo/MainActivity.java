@@ -6,7 +6,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.util.Log;
+
+import static android.hardware.Sensor.TYPE_RELATIVE_HUMIDITY;
 
 public class MainActivity extends Activity implements SensorEventListener {
 
@@ -14,8 +15,11 @@ public class MainActivity extends Activity implements SensorEventListener {
     private SensorManager mSensorManager;
     //The sensor we use
     private Sensor mRotationVectorSensor;
+    private Sensor pressureSensor;
     //The view to draw on
     private MyView gameView;
+
+    private Sensor temperatureSensor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,63 +27,74 @@ public class MainActivity extends Activity implements SensorEventListener {
         setContentView(R.layout.activity_main);
         gameView = (MyView) findViewById(R.id.gameView);
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-        if (mSensorManager==null)
-            System.out.println("SensorManager is null");
-        else
-            System.out.println("SensorManager is up and running!");
-
         mRotationVectorSensor = mSensorManager.getDefaultSensor(
                 Sensor.TYPE_ROTATION_VECTOR);
         Sensor accelSensor = mSensorManager.getDefaultSensor(
                 Sensor.TYPE_ACCELEROMETER);
+
+        //just to show the various sensors and check if they are available.
         Sensor gameRotation = mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
         Sensor magnetosensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         Sensor gyrosensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         Sensor georotationSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR);
+        temperatureSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        pressureSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+        Sensor humiditySensor = mSensorManager.getDefaultSensor(TYPE_RELATIVE_HUMIDITY);
+        //rotationvector sensor uses the gyroscopet
+        //gyroscope is not supported in the emulator.
 
-
-        //rotationvector sensor bruger gyroscopet
-        //gyroscopet er ikke med i emulatoren.
-
-        //magnetosensor og accelerometer ER MED i emulatoren
+        //magnetosensor and accelerometer IS supported in the  emulator
+        //Also ambient_temperature og pressure sensor (barometer) is supported
+        //in the emulator.
 
         if (mRotationVectorSensor==null)
-            System.out.println("RotationVector is null");
+            System.out.println("RotationVector not supported");
         else
-            System.out.println("RotationVector is up and running!");
+            System.out.println("RotationVector is detected!");
 
         if (accelSensor==null)
-            System.out.println("Acceleromter is null");
+            System.out.println("Accelerometer not supported");
         else
-            System.out.println("Accelerometer is up and running!");
+            System.out.println("Accelerometer is detected!");
 
         if (gameRotation==null)
-            System.out.println("gamerotation is null");
+            System.out.println("gamerotationsensor not supported");
         else
-            System.out.println("gamerotation is up and running!");
+            System.out.println("gamerotationsensor detected!");
 
         if (magnetosensor==null)
-            System.out.println("magnetosensor is null");
+            System.out.println("magnetosensor not supported");
         else
-            System.out.println("magnetosensor is up and running!");
+            System.out.println("magnetosensor detected!");
 
         if (gyrosensor==null)
-            System.out.println("gyrosensor is null");
+            System.out.println("gyrosensor not supported");
         else
-            System.out.println("gyrosensor is up and running!");
+            System.out.println("gyrosensor detected!");
 
         if (georotationSensor==null)
-            System.out.println("georotationsensor is null");
+            System.out.println("georotationsensor not supported");
         else
-            System.out.println("georotationsensor is up and running!");
+            System.out.println("georotationsensor detected!");
 
+        if (temperatureSensor==null)
+            System.out.println("temperaturesensor not supported");
+        else
+            System.out.println("temperaturesensor detected!");
 
+        if (pressureSensor==null)
+            System.out.println("presuresensor (barometer) not supported");
+        else
+            System.out.println("presuresensor (barometer) detected!");
 
-
+        if (humiditySensor==null)
+            System.out.println("humidity sensor not supported");
+        else
+            System.out.println("humidity sensor detected!");
 
     }
 
-    //we did need to implement this method to fullfill
+    //we did need to define this method to fullfill
     //the interface, but it does not have to do anything.
     public void onAccuracyChanged(Sensor sensor,
                             int accuracy)
@@ -92,7 +107,12 @@ public class MainActivity extends Activity implements SensorEventListener {
         super.onStart();
     // enable our sensor when the activity is resumed, ask for
         // 10 ms updates, so that is 100 times per second
-        mSensorManager.registerListener(this, mRotationVectorSensor, 10000);
+        if (mRotationVectorSensor!=null)
+            mSensorManager.registerListener(this, mRotationVectorSensor, 10000);
+        if (temperatureSensor!=null)
+            mSensorManager.registerListener(this,temperatureSensor,10000);
+        if (pressureSensor!=null)
+            mSensorManager.registerListener(this,pressureSensor,10000);
     }
 
     @Override
@@ -110,9 +130,22 @@ public class MainActivity extends Activity implements SensorEventListener {
     public void onSensorChanged(SensorEvent event)
     {
         float[] mRotationMatrixFromVector = new float[9];
-        System.out.println("in onSensorChangedEvent");
+        //System.out.println("in onSensorChangedEvent");
 
-        float orientationVals[] = new float[3];
+        if (event.sensor.getType() == Sensor.TYPE_AMBIENT_TEMPERATURE)
+        {
+            float temperature = event.values[0];
+            System.out.println("temperature = "+temperature+" degrees");
+        }
+
+        if (event.sensor.getType() == Sensor.TYPE_PRESSURE)
+        {
+            float pressure = event.values[0];
+            System.out.println("pressure = "+pressure+" mbar");
+        }
+
+
+            float orientationVals[] = new float[3];
         // It is good practice to check that we received the proper sensor event
         if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR)
         {
@@ -147,9 +180,9 @@ public class MainActivity extends Activity implements SensorEventListener {
              */
 
 
-            Log.d("Sensors","\nAzimoth: " + orientationVals[0] + ", Pitch: "
+          /*  Log.d("Sensors","\nAzimoth: " + orientationVals[0] + ", Pitch: "
                     + orientationVals[1] + ",Roll: "
-                    + orientationVals[2]);
+                    + orientationVals[2]);*/
             float pitch = orientationVals[1];
             float roll = orientationVals[2];
 
